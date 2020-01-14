@@ -1,4 +1,4 @@
-import { Sprite } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 
 import Vector from './vector';
 
@@ -21,7 +21,7 @@ export default class Particle {
   }
 
   createSprite(container, { texture }) {
-    this.sprite = new Sprite(texture);
+    this.sprite = new PIXI.Sprite(texture);
     this.sprite.anchor.set(0.5);
     this.sprite.position.set(this.position.x, this.position.y);
     container.addChild(this.sprite);

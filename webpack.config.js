@@ -16,19 +16,19 @@ module.exports = (env, args) => {
       port: 4000,
       open: true
     },
-    entry: './src/js/main.js',
+    entry: './src/js/index.js',
     output: {
       path: path.resolve(__dirname, './dist'),
-      filename: devMode ? 'main.js' : 'main.min.js',
+      filename: devMode ? 'potatoparticles.js' : 'potatoparticles.min.js',
       // publicPath: '.'
       library: 'PotatoParticles',
       libraryTarget: 'umd',
       libraryExport: 'default',
       umdNamedDefine: true
     },
-    // externals: [
-    //   { 'pixi.js': 'PIXI' },
-    // ],
+    externals: [
+      { 'pixi.js': 'PIXI' },
+    ],
     module: {
       rules: [
         {
