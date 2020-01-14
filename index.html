@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>PotatoParticles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="./dist/main.css" />
+</head>
+<body>
+  <div id="app" data-image="./public/git.png"></div>
+  <script src="./dist/main.js"></script>
+  <script>
+
+    function ready(fn) {
+      if (document.readyState != 'loading'){
+        fn();
+      } else {
+        document.addEventListener('DOMContentLoaded', fn);
+      }
+    }
+
+    ready(function() {
+      var appEl = document.getElementById('app');
+      new PotatoParticles({
+        rootEl: appEl,
+        imageSrc: appEl.getAttribute('data-image'),
+        pixelSize: 5,
+        particleSize: 4,
+        pixelFilter: function(pixel) {
+          return !(pixel.r > 0.95 || pixel.g > 0.95 || pixel.b > 0.95);
+        },
+      });
+    });
+  </script>
+</body>
+</html>
