@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import { Renderer, Ticker, Container, Graphics, utils as PIXIutils } from 'pixi.js';
 
 import ImageHelper from './ImageHelper.js';
 import Vector from './vector.js';
@@ -61,9 +61,9 @@ export default class Core {
   }
 
   initRenderer() {
-    this.ticker = PIXI.Ticker.shared;
+    this.ticker = Ticker.shared;
 
-    this.renderer = new PIXI.Renderer({
+    this.renderer = new Renderer({
       width: this.width,
       height: this.height,
       transparent: true,
@@ -73,9 +73,9 @@ export default class Core {
 
     this.rootEl.appendChild(this.renderer.view);
 
-    this.stage = new PIXI.Container();
+    this.stage = new Container();
 
-    this.particleContainer = new PIXI.Container();
+    this.particleContainer = new Container();
     this.stage.addChild(this.particleContainer);
   }
 
@@ -106,7 +106,7 @@ export default class Core {
     for (let i = 0; i < l; i++) {
       const particleData = this.particlesData[i];
 
-      const color = PIXI.utils.rgb2hex([particleData.r, particleData.g, particleData.b]);
+      const color = PIXIutils.rgb2hex([particleData.r, particleData.g, particleData.b]);
 
       this.particles.push(new Particle(this.particleContainer, {
         x: Math.random() * this.width + xOffset,
@@ -119,7 +119,7 @@ export default class Core {
   }
 
   createCircleTexture(radius, color, alpha) {
-    const graphics = new PIXI.Graphics();
+    const graphics = new Graphics();
     graphics.beginFill(color, alpha);
     graphics.drawCircle(0, 0, radius);
     graphics.endFill();

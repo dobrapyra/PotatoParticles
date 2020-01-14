@@ -1,5 +1,3 @@
-const ROUND_PRECIZE = 1e5;
-
 export default class Vector {
   constructor(x, y) {
     this.x = x;
@@ -31,7 +29,7 @@ export default class Vector {
   }
 
   static roundAxis(axis) {
-    return Math.round(axis * ROUND_PRECIZE) / ROUND_PRECIZE;
+    return Math.round(axis * 1e5) / 1e5;
   }
 
   set(x, y) {

@@ -1,15 +1,6 @@
-import * as PIXI from 'pixi.js';
+import { Sprite } from 'pixi.js';
 
 import Vector from './vector';
-
-// to target multiply
-const TO_TARGET_MULTI = 0.04;
-// mouse distance
-const MOUSE_DIST = 120;
-// less quad
-const LESS_QUAD = 0.04;
-// force multiplication
-const FORCE_MULT = 0.8;
 
 export default class Particle {
   constructor(container, {
@@ -30,7 +21,7 @@ export default class Particle {
   }
 
   createSprite(container, { texture }) {
-    this.sprite = new PIXI.Sprite(texture);
+    this.sprite = new Sprite(texture);
     this.sprite.anchor.set(0.5);
     this.sprite.position.set(this.position.x, this.position.y);
     container.addChild(this.sprite);
@@ -49,7 +40,7 @@ export default class Particle {
     if (!this.target) return null;
 
     const force = Vector.subtract(this.target, this.position);
-    force.multiply(TO_TARGET_MULTI);
+    force.multiply(0.04);
 
     return force;
   }
@@ -58,10 +49,10 @@ export default class Particle {
     const force = Vector.subtract(mousePos, this.position);
     const distance = force.value();
     force.normalize();
-    const invDist = (MOUSE_DIST / distance);
+    const invDist = (120 / distance);
     const quadDist = (invDist * invDist);
-    const lessQuadDist = quadDist - LESS_QUAD;
-    const mult = lessQuadDist < 0 ? 0 : lessQuadDist * FORCE_MULT;
+    const lessQuadDist = quadDist - 0.04;
+    const mult = lessQuadDist < 0 ? 0 : lessQuadDist * 0.8;
     force.multiply(-mult);
 
     return force;

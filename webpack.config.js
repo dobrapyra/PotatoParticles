@@ -26,6 +26,9 @@ module.exports = (env, args) => {
       libraryExport: 'default',
       umdNamedDefine: true
     },
+    // externals: [
+    //   { 'pixi.js': 'PIXI' },
+    // ],
     module: {
       rules: [
         {
