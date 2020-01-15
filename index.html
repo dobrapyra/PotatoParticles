@@ -8,7 +8,9 @@
   <link rel="stylesheet" type="text/css" media="screen" href="./dist/main.css" />
 </head>
 <body>
-  <div id="app" data-image="./public/git.png"></div>
+  <div class="hero">
+    <img id="heroImage" src="./public/git.png" />
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.0/pixi.min.js"></script>
   <script src="./dist/potatoparticles.js"></script>
   <script>
@@ -22,10 +24,8 @@
     }
 
     ready(function() {
-      var appEl = document.getElementById('app');
       new PotatoParticles({
-        rootEl: appEl,
-        imageSrc: appEl.getAttribute('data-image'),
+        imageEl: document.getElementById('heroImage'),
         pixelSize: 6,
         particleSize: 3,
         pixelFilter: function(pixel) {

@@ -6,8 +6,7 @@ import Particle from './Particle.js';
 
 export default class Core {
   constructor({
-    rootEl,
-    imageSrc,
+    imageEl,
     pixelSize = 10,
     particleSize = 6,
     resistance = -0.7,
@@ -18,7 +17,7 @@ export default class Core {
     particleInit,
     mouseInteraction = true,
   }) {
-    this.rootEl = rootEl;
+    this.imageEl = imageEl;
 
     this.pixelSize = pixelSize;
     this.particleSize = particleSize;
@@ -31,16 +30,14 @@ export default class Core {
     this.mouseInteraction = mouseInteraction;
 
     this.imageHelper = new ImageHelper();
-    this.imageHelper.load(imageSrc).then((image) => {
+    this.imageHelper.load(imageEl.src).then((image) => {
       this.onLogoLoaded(image);
-      this.logoImage = image;
     });
   }
 
   onLogoLoaded(image) {
-    this.logoImage = image;
-    this.width = this.logoImage.width;
-    this.height = this.logoImage.height;
+    this.width = image.width;
+    this.height = image.height;
 
     this.particlesData = this.imageHelper.imageToDots({
       width: this.width,
@@ -73,7 +70,10 @@ export default class Core {
     this.renderer.context.mozImageSmoothingEnabled = false;
     this.renderer.context.webkitImageSmoothingEnabled = false;
 
-    this.rootEl.appendChild(this.renderer.view);
+    this.canvasEl = this.renderer.view;
+
+    this.imageEl.style.display = 'none';
+    this.imageEl.parentElement.appendChild(this.canvasEl);
 
     this.stage = new PIXI.Container();
 
@@ -171,8 +171,8 @@ export default class Core {
   }
 
   calculateScale() {
-    const rootRect = this.rootEl.getBoundingClientRect();
-    this.scale = this.width / rootRect.width;
+    const canvasRect = this.canvasEl.getBoundingClientRect();
+    this.scale = this.width / canvasRect.width;
   }
 
   setParticlesTargets() {
@@ -195,8 +195,8 @@ export default class Core {
   }
 
   onMouseMove(e) {
-    const rootRect = this.rootEl.getBoundingClientRect();
-    this.mouseVector.set(e.clientX - rootRect.left, e.clientY - rootRect.top);
+    const canvasRect = this.canvasEl.getBoundingClientRect();
+    this.mouseVector.set(e.clientX - canvasRect.left, e.clientY - canvasRect.top);
     this.mouseVector.multiply(this.scale);
   }
 

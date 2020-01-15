@@ -4,12 +4,13 @@ html, body {
   color: #323232;
 }
 
-#app {
+.hero {
   position: relative;
   display: block;
   width: 100%;
   height: auto;
 
+  & > img ,
   & > canvas {
     display: block;
     width: 100%;
