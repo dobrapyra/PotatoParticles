@@ -9,6 +9,7 @@
 </head>
 <body>
   <div id="app" data-image="./public/git.png"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.0/pixi.min.js"></script>
   <script src="./dist/potatoparticles.js"></script>
   <script>
 
@@ -29,6 +30,16 @@
         particleSize: 3,
         pixelFilter: function(pixel) {
           return !(pixel.r > 0.95 || pixel.g > 0.95 || pixel.b > 0.95);
+        },
+        particleInit: function(particle, shared) {
+          return {
+            x: Math.random() * shared.width + (shared.avgX - shared.halfWidth),
+            y: -shared.particleSize,
+            delay: (
+              ((shared.rangeY - (particle.y - shared.minY)) * (2 / shared.rangeY))
+              + (Math.random() * shared.delayRand)
+            ),
+          };
         },
       });
     });

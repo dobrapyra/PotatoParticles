@@ -12,9 +12,10 @@ export default class Core {
     particleSize = 6,
     resistance = -0.7,
     minMass = 4,
-    massAmp = 2,
+    massRand = 2,
     delayRand = 0.4,
     pixelFilter,
+    particleInit,
     mouseInteraction = true,
   }) {
     this.rootEl = rootEl;
@@ -23,9 +24,10 @@ export default class Core {
     this.particleSize = particleSize;
     this.resistance = resistance;
     this.minMass = minMass;
-    this.massAmp = massAmp;
+    this.massRand = massRand;
     this.delayRand = delayRand;
     this.pixelFilter = pixelFilter;
+    this.particleInit = particleInit;
     this.mouseInteraction = mouseInteraction;
 
     this.imageHelper = new ImageHelper();
@@ -82,40 +84,79 @@ export default class Core {
   initParticles() {
     this.particles = [];
 
-    const l = this.particlesData.length;
+    const particlesCount = this.particlesData.length;
+    const shared = this.getShared();
 
-    let sumX = 0;
-    let minY = this.particlesData[0].y;
-    let maxY = 0;
-    for (let i = 0; i < l; i++) {
-      sumX += this.particlesData[i].x;
-      if (this.particlesData[i].y < minY) minY = this.particlesData[i].y;
-      if (this.particlesData[i].y > maxY) maxY = this.particlesData[i].y;
+    const particleInit = this.particleInit || (() => ({}));
+
+    for (let i = 0; i < particlesCount; i++) {
+      const particle = this.particlesData[i];
+
+      const color = PIXI.utils.rgb2hex([particle.r, particle.g, particle.b]);
+
+      this.particles.push(new Particle(this.particleContainer, Object.assign({
+        x: shared.avgX,
+        y: shared.avgY,
+        mass: Math.random() * shared.massRand + shared.minMass,
+        texture: this.createCircleTexture(shared.particleSize / 2, color, 1),
+        delay: (
+          ((shared.rangeY - (particle.y - shared.minY)) * (2 / shared.rangeY))
+          + (Math.random() * shared.delayRand)
+        ),
+      }, particleInit(particle, shared))));
     }
+  }
 
-    const avgX = (sumX / l);
-    const xOffset = avgX - (this.width / 2);
-    const yRange = maxY - minY;
-    const delayScale = 2 / yRange;
-
+  getShared() {
+    const particlesCount = this.particlesData.length;
     const particleSize = this.particleSize;
     const minMass = this.minMass;
-    const massAmp = this.massAmp;
+    const massRand = this.massRand;
     const delayRand = this.delayRand;
 
-    for (let i = 0; i < l; i++) {
+    let sumX = 0;
+    let sumY = 0;
+
+    let minX = this.particlesData[0].x;
+    let maxX = 0;
+
+    let minY = this.particlesData[0].y;
+    let maxY = 0;
+
+    for (let i = 0; i < particlesCount; i++) {
       const particleData = this.particlesData[i];
 
-      const color = PIXI.utils.rgb2hex([particleData.r, particleData.g, particleData.b]);
+      sumX += particleData.x;
+      sumY += particleData.y;
 
-      this.particles.push(new Particle(this.particleContainer, {
-        x: Math.random() * this.width + xOffset,
-        y: -particleSize,
-        mass: Math.random() * massAmp + minMass,
-        texture: this.createCircleTexture(particleSize / 2, color, 1),
-        delay: (yRange - (particleData.y - minY)) * delayScale + Math.random() * delayRand,
-      }));
+      if (particleData.x < minX) minX = particleData.x;
+      if (particleData.x > maxX) maxX = particleData.x;
+
+      if (particleData.y < minY) minY = particleData.y;
+      if (particleData.y > maxY) maxY = particleData.y;
     }
+
+    return {
+      width: this.width,
+      height: this.height,
+      halfWidth: this.width / 2,
+      halfHeight: this.height / 2,
+      particlesCount,
+      particleSize,
+      minMass,
+      massRand,
+      delayRand,
+      minX,
+      minY,
+      maxX,
+      maxY,
+      sumX,
+      sumY,
+      avgX: (sumX / particlesCount),
+      avgY: (sumY / particlesCount),
+      rangeX: (maxX - minX),
+      rangeY: (maxY - minY),
+    };
   }
 
   createCircleTexture(radius, color, alpha) {

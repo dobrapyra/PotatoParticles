@@ -1,7 +1,6 @@
 /* global require module __dirname */
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 
 module.exports = (env, args) => {
@@ -44,7 +43,8 @@ module.exports = (env, args) => {
         {
           test: /\.s?css$/,
           use: [
-            devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+            // devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+            MiniCssExtractPlugin.loader,
             'css-loader',
             'sass-loader'
           ]
@@ -80,19 +80,6 @@ module.exports = (env, args) => {
             safari10: false,
           },
         }),
-        // new UglifyJsPlugin({
-        //   uglifyOptions: {
-        //     warnings: false,
-        //     parse: {},
-        //     compress: {},
-        //     mangle: true, // Note `mangle.properties` is `false` by default.
-        //     output: null,
-        //     toplevel: false,
-        //     nameCache: null,
-        //     ie8: false,
-        //     keep_fnames: false,
-        //   },
-        // })
       ],
     },
   };
