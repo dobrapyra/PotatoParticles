@@ -1,0 +1,12 @@
+/node_modules
+
+/webpack.config.js
+/.eslintrc.js
+/.eslintignore
+/.gitignore
+
+/src
+
+/demo
+/index.html
+/favicon.ico
