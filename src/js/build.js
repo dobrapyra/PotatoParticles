@@ -1,4 +1,4 @@
-import '../scss/index.scss';
+// import '../scss/index.scss';
 
 import PotatoParticles from './index.js';
 

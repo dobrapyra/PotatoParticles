@@ -22,7 +22,7 @@ export default class Particle {
     container.addChild(this.sprite);
   }
 
-  createSprite(container, { texture, color, alpha }) {
+  createSprite({ texture, color, alpha }) {
     const sprite = new PIXI.Sprite(texture);
     sprite.tint = color;
     sprite.alpha = alpha;

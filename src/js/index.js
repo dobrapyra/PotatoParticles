@@ -41,9 +41,9 @@ export default class PotatoParticles {
     });
   }
 
-  onLogoLoaded(image) {
-    this.width = image.width;
-    this.height = image.height;
+  onLogoLoaded() {
+    this.width = this.imageEl.naturalWidth || this.imageEl.width;
+    this.height = this.imageEl.naturalHeight || this.imageEl.height;
 
     this.particlesData = this.imageHelper.imageToDots({
       width: this.width,

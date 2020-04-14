@@ -6,7 +6,29 @@ const path = require('path');
 module.exports = (env, args) => {
   const devMode = args.mode !== 'production';
 
-  return {
+  const library = 'PotatoParticles';
+  const version = `${JSON.stringify(require('./package.json').version)}`;
+
+  const chunksCfg = [
+    {
+      entry: './src/js/build.js',
+      filename: 'potato-particles',
+      libraryTarget: 'window',
+      externals: {
+        'pixi.js': 'PIXI'
+      }
+    },
+    {
+      entry: './src/js/index.js',
+      filename: 'potato-particles.umd',
+      libraryTarget: 'umd',
+      externals: {
+        'pixi.js': 'pixi.js'
+      }
+    },
+  ];
+
+  return chunksCfg.map(chunkCfg => ({
     mode: devMode ? 'development' : 'production',
     devtool: devMode ? 'inline-source-map' : 'none',
     devServer: {
@@ -15,19 +37,17 @@ module.exports = (env, args) => {
       port: 4000,
       open: true
     },
-    entry: './src/js/index.js',
+    entry: chunkCfg.entry,
     output: {
-      path: path.resolve(__dirname, './dist'),
-      filename: devMode ? 'potatoparticles.js' : 'potatoparticles.min.js',
       // publicPath: '.'
-      library: 'PotatoParticles',
-      libraryTarget: 'umd',
+      path: path.resolve(__dirname, './dist'),
+      filename: `${chunkCfg.filename}${(devMode ? '.js' : '.min.js')}`,
+      library: library,
+      libraryTarget: chunkCfg.libraryTarget,
       libraryExport: 'default',
       umdNamedDefine: true
     },
-    externals: [
-      { 'pixi.js': 'PIXI' },
-    ],
+    externals: chunkCfg.externals,
     module: {
       rules: [
         {
@@ -36,7 +56,7 @@ module.exports = (env, args) => {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['env']
+              presets: ['@babel/preset-env']
             }
           }
         },
@@ -53,8 +73,8 @@ module.exports = (env, args) => {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: 'main.css'
-      })
+        filename: devMode ? `${chunkCfg.filename}.css` : `${chunkCfg.filename}.min.css`,
+      }),
     ],
     optimization: {
       minimize: !devMode,
@@ -71,7 +91,14 @@ module.exports = (env, args) => {
             compress: {},
             mangle: true, // Note `mangle.properties` is `false` by default.
             module: false,
-            output: null,
+            // output: null,
+            output: {
+              preamble: `/**
+ * ${library}
+ * author: dobrapyra (Michał Zieliński)
+ * version ${version}
+ */`
+            },
             toplevel: false,
             nameCache: null,
             ie8: false,
@@ -82,5 +109,5 @@ module.exports = (env, args) => {
         }),
       ],
     },
-  };
+  }));
 };
