@@ -4,7 +4,7 @@ import Vector from './vector';
 
 export default class Particle {
   constructor(container, {
-    x, y, mass = 1, texture, delay,
+    x, y, mass = 1, texture, color, alpha, delay,
   }) {
     this.position = new Vector(x, y);
     this.velocity = new Vector(0, 0);
@@ -17,14 +17,19 @@ export default class Particle {
     this.waiting = this.waitFrames > 0;
 
     if (!container) return;
-    this.createSprite(container, { texture });
+
+    this.sprite = this.createSprite({ texture, color, alpha });
+    container.addChild(this.sprite);
   }
 
-  createSprite(container, { texture }) {
-    this.sprite = new PIXI.Sprite(texture);
-    this.sprite.anchor.set(0.5);
-    this.sprite.position.set(this.position.x, this.position.y);
-    container.addChild(this.sprite);
+  createSprite(container, { texture, color, alpha }) {
+    const sprite = new PIXI.Sprite(texture);
+    sprite.tint = color;
+    sprite.alpha = alpha;
+    sprite.anchor.set(0.5);
+    sprite.position.set(this.position.x, this.position.y);
+
+    return sprite;
   }
 
   addForce(force) {
@@ -79,5 +84,9 @@ export default class Particle {
   render() {
     if (!this.sprite) return;
     this.sprite.position.set(this.position.x, this.position.y);
+  }
+
+  destroy() {
+    this.sprite.destroy({ texture: true });
   }
 }

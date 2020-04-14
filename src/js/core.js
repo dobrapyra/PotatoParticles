@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
 
-import ImageHelper from './ImageHelper.js';
+import ImageHelper from './imageHelper.js';
 import Vector from './vector.js';
-import Particle from './Particle.js';
+import Particle from './particle.js';
 
-export default class Core {
+export default class PotatoParticles {
   constructor({
     imageEl,
     pixelSize = 10,
@@ -14,6 +14,7 @@ export default class Core {
     massRand = 2,
     delayRand = 0.4,
     pixelFilter,
+    pixelMap,
     particleInit,
     mouseInteraction = true,
   }) {
@@ -26,12 +27,17 @@ export default class Core {
     this.massRand = massRand;
     this.delayRand = delayRand;
     this.pixelFilter = pixelFilter;
+    this.pixelMap = pixelMap;
     this.particleInit = particleInit;
     this.mouseInteraction = mouseInteraction;
 
+    const imagePromises = [];
+
     this.imageHelper = new ImageHelper();
-    this.imageHelper.load(imageEl.src).then((image) => {
-      this.onLogoLoaded(image);
+    imagePromises.push(this.imageHelper.load(imageEl.src));
+
+    Promise.all(imagePromises).then(() => {
+      this.onLogoLoaded();
     });
   }
 
@@ -44,6 +50,7 @@ export default class Core {
       height: this.height,
       pixelSize: this.pixelSize,
       pixelFilter: this.pixelFilter,
+      pixelMap: this.pixelMap,
     });
 
     this.mouseVector = new Vector(0, 0);
@@ -60,8 +67,7 @@ export default class Core {
   }
 
   initRenderer() {
-    this.ticker = PIXI.Ticker.shared;
-
+    PIXI.utils.skipHello();
     this.renderer = new PIXI.Renderer({
       width: this.width,
       height: this.height,
@@ -79,6 +85,10 @@ export default class Core {
 
     this.particleContainer = new PIXI.Container();
     this.stage.addChild(this.particleContainer);
+
+    this.tick = this.tick.bind(this);
+    this.ticker = new PIXI.Ticker();
+    this.ticker.add(this.tick);
   }
 
   initParticles() {
@@ -89,6 +99,8 @@ export default class Core {
 
     const particleInit = this.particleInit || (() => ({}));
 
+    const texture = this.createCircleTexture(shared.particleSize / 2, 0xffffff, 1);
+
     for (let i = 0; i < particlesCount; i++) {
       const particle = this.particlesData[i];
 
@@ -98,7 +110,9 @@ export default class Core {
         x: shared.avgX,
         y: shared.avgY,
         mass: Math.random() * shared.massRand + shared.minMass,
-        texture: this.createCircleTexture(shared.particleSize / 2, color, 1),
+        texture,
+        color,
+        alpha: particle.a,
         delay: (
           ((shared.rangeY - (particle.y - shared.minY)) * (2 / shared.rangeY))
           + (Math.random() * shared.delayRand)
@@ -201,7 +215,11 @@ export default class Core {
   }
 
   startLoop() {
-    this.ticker.add(this.tick.bind(this));
+    this.ticker.start();
+  }
+
+  stopLoop() {
+    this.ticker.stop();
   }
 
   tick(delta) {
@@ -229,5 +247,26 @@ export default class Core {
     }
 
     this.renderer.render(this.stage);
+  }
+
+  destroy() {
+    if (this.ticker) {
+      this.stopLoop();
+      this.ticker.remove(this.tick);
+      this.ticker.destroy();
+    }
+
+    const l = this.particles.length;
+    for (let i = 0; i < l; i++) {
+      this.particles[i].destroy();
+    }
+
+    if (this.stage) {
+      this.stage.destroy({ children: true, texture: true });
+    }
+
+    if (this.renderer) {
+      this.renderer.destroy();
+    }
   }
 }

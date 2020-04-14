@@ -44,6 +44,7 @@ export default class ImageHelper {
       height = image.height,
       pixelSize = 1,
       pixelFilter = pixel => (pixel.a >= 0.4),
+      pixelMap = pixel => (pixel),
     } = props;
 
     const canvasWidth = Math.ceil(width / pixelSize);
@@ -53,7 +54,7 @@ export default class ImageHelper {
     this.canvas.setAttribute('height', canvasHeight);
 
     return this.imageToData(image, {
-      canvasWidth, canvasHeight, pixelSize, pixelFilter,
+      canvasWidth, canvasHeight, pixelSize, pixelFilter, pixelMap,
     });
   }
 
@@ -63,6 +64,7 @@ export default class ImageHelper {
       canvasHeight,
       pixelSize,
       pixelFilter,
+      pixelMap,
     } = props;
 
     this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -70,28 +72,23 @@ export default class ImageHelper {
 
     const imageData = this.ctx.getImageData(0, 0, canvasWidth, canvasHeight).data;
 
-    const maxChanVal = 255;
-    const allChannels = 4;
-    const chanR = 0;
-    const chanG = 1;
-    const chanB = 2;
-    const chanA = 3;
-
     const data = [];
     for (let y = 0; y < canvasHeight; y++) {
       for (let x = 0; x < canvasWidth; x++) {
-        const index = (y * canvasWidth + x) * allChannels;
+        const index = (y * canvasWidth + x) * 4;
 
         const pixel = {
           x: x * pixelSize,
           y: y * pixelSize,
-          r: (imageData[index + chanR] / maxChanVal),
-          g: (imageData[index + chanG] / maxChanVal),
-          b: (imageData[index + chanB] / maxChanVal),
-          a: (imageData[index + chanA] / maxChanVal),
+          r: (imageData[index + 0] / 255),
+          g: (imageData[index + 1] / 255),
+          b: (imageData[index + 2] / 255),
+          a: (imageData[index + 3] / 255),
         };
 
         if (!pixelFilter(pixel)) continue;
+
+        Object.assign(pixel, pixelMap(pixel));
 
         data.push(pixel);
       }
