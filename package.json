@@ -1,6 +1,6 @@
 {
   "name": "potatoparticles",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Particles effect by dobrapyra",
   "keywords": [
     "particles",
@@ -30,12 +30,12 @@
     "babel-loader": "^8.1.0",
     "css-loader": "^2.1.1",
     "mini-css-extract-plugin": "^0.5.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "pixi.js": "^5.2.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "webpack": "^4.42.1",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.11.0"
   }
 }
